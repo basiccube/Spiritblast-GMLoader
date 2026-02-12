@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="SpiritblastUtils.vcxproj" Id="c44211f1-7218-41fb-acf3-f1b30baeead4" />
+</Solution>

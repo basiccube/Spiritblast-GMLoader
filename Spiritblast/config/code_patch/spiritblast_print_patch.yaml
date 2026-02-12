@@ -1,0 +1,44 @@
+gml_GlobalScript_debug_library:
+  - type: findreplace
+    
+    find: |-
+        function print()
+    code: |-
+        function print()
+        {
+            var _out = ""
+            
+            for (var i = 0; i < argument_count; i++)
+            {
+                if (argument[i] == undefined)
+                    _out += "undefined"
+                else
+                    _out += string(argument[i])
+                
+                if (i < argument_count - 1)
+                    _out += " "
+            }
+            
+            var _log = file_text_open_append(working_directory + "spiritblast.log")
+            file_text_write_string(_log, _out + "\n")
+            file_text_close(_log)
+            
+            show_debug_message(_out)
+            external_call(global.conhost_write, _out)
+            return _out;
+        }
+        
+        function _print()
+
+  - type: findreplace
+    
+    find: |-
+        function print_ingame(arg0 = "")
+    code: |-
+        function print_ingame(arg0 = "")
+        {
+            if (arg0 != "")
+                print(arg0)
+        }
+        
+        function _print_ingame(arg0 = "")
