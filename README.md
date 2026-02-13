@@ -18,7 +18,8 @@ There are a few keys that have been added that do some sort of action:
 
 ## Install
 
-Make sure you have GMLoader set up with ANTONBLAST.
+Make sure you have GMLoader set up with ANTONBLAST.  
+This [one](https://gamebanana.com/tools/21913) should work fine, alternatively you can use [my own copy](https://mega.nz/file/vq5TyT7a#9QsH9ADyDqvjqzCOcWNUI6Tzxvl6udWh7yN9hasOeF4) of it, which should be identical to the other one minus some cleanup that I did.
 
 Download this repository and then copy the folders located in the Spiritblast folder into your mods folder.
 

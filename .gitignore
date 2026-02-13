@@ -430,3 +430,5 @@ FodyWeavers.xsd
 # GMLoader directories
 csx/
 lib/
+
+*.code-workspace

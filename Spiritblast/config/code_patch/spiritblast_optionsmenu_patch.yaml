@@ -1,0 +1,10 @@
+gml_Object_ob_optionsMenu_Create_0:
+  - type: findreplace
+    
+    find: |-
+        return loc_string("ui", "pause_Options");
+    code: |-
+        if equals(currentPage, debugPage)
+            return "Debug";
+
+        return loc_string("ui", "pause_Options");

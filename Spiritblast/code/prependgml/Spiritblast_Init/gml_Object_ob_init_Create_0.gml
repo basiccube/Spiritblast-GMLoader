@@ -1,42 +1,32 @@
-#macro SB_UTILS_DLL "SpiritblastUtils.dll"
+conhost_func_init()
 
-global.conhost_init = external_define(SB_UTILS_DLL, "conhost_init", dll_cdecl, ty_real, 0)
-global.conhost_free = external_define(SB_UTILS_DLL, "conhost_free", dll_cdecl, ty_real, 0)
-global.conhost_is_allocated = external_define(SB_UTILS_DLL, "conhost_is_allocated", dll_cdecl, ty_real, 0)
-global.conhost_write = external_define(SB_UTILS_DLL, "conhost_write", dll_cdecl, ty_real, 1, ty_string)
-global.conhost_set_color = external_define(SB_UTILS_DLL, "conhost_set_color", dll_cdecl, ty_real, 2, ty_real, ty_real)
-global.conhost_title = external_define(SB_UTILS_DLL, "conhost_title", dll_cdecl, ty_real, 1, ty_string)
+// Set up builtin function map
+global.sb_builtinFunctions = ds_map_create()
+for (var i = 0; i < 100000; i++)
+{
+	var funcname = script_get_name(i)
+	if (funcname == "<unknown>")
+		break;
 
-#macro CONHOST_BLACK 0
-#macro CONHOST_BLUE 1
-#macro CONHOST_GREEN 2
-#macro CONHOST_AQUA 3
-#macro CONHOST_RED 4
-#macro CONHOST_PURPLE 5
-#macro CONHOST_YELLOW 6
-#macro CONHOST_WHITE 7
-#macro CONHOST_GRAY 8
-#macro CONHOST_LTBLUE 9
-#macro CONHOST_LTGREEN 10
-#macro CONHOST_LTAQUA 11
-#macro CONHOST_LTRED 12
-#macro CONHOST_LTPURPLE 13
-#macro CONHOST_LTYELLOW 14
-#macro CONHOST_BRWHITE 15
+	ds_map_set(global.sb_builtinFunctions, funcname, i)
+}
 
-// Initialize console window
-external_call(global.conhost_init)
-external_call(global.conhost_title, "ANTONBLAST (Console)")
+// Load settings
+sb_load_settings()
 
 // Delete log if it exists
 if file_exists(working_directory + "spiritblast.log")
 	file_delete(working_directory + "spiritblast.log")
+
+// Initialize console window if enabled
+if global.sb_settings.debug.debugOutput
+{
+	conhost_init()
+	conhost_title("ANTONBLAST (Console)")
+}
 
 // Print version info
 print("Spiritblast")
 print("Version " + sb_get_version())
 print("=======================================")
 print("")
-
-// Load settings
-sb_load_settings()
