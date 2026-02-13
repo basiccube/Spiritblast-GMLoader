@@ -1,0 +1,7 @@
+gml_Object_ob_mainMenu_Draw_0:
+  - type: findappend
+    
+    find: |-
+        draw_set_font(fn_credits)
+    code: |-
+        draw_text(8 - (getAttractProgress() * 200), 192, "SPIRITBLAST V" + sb_get_version())

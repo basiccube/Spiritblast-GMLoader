@@ -19,6 +19,8 @@ function sb_debug_collision_init()
 	{
 		with (obj)
 		{
+			if (object_index != obj)
+				continue;
 			if (gameplayLayer != lay)
 				continue;
 			

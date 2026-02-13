@@ -42,3 +42,12 @@ gml_GlobalScript_debug_library:
         }
         
         function _print_ingame(arg0 = "")
+
+  - type: findappend
+    
+    find: |-
+        show_debug_message(_debugOut)
+    code: |-
+        var _sblog = file_text_open_append(working_directory + "spiritblast.log")
+        file_text_write_string(_sblog, "\n" + _debugOut + "\n")
+        file_text_close(_sblog)

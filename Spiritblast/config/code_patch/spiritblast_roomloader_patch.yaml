@@ -1,0 +1,10 @@
+gml_Object_ob_warp_Create_0:
+  - type: findreplace
+    
+    find: |-
+        room_goto(targetRoom)
+    code: |-
+        if is_string(targetRoom)
+            RoomLoader.GoToRoom(RoomLoader.levelName, targetRoom)
+        else
+            room_goto(targetRoom)
