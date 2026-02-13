@@ -2,9 +2,12 @@
 
 function RoomLoader() constructor
 {
-    static currentRoom = "";
-    static firstRoom = "";
-    static levelName = "";
+    static currentRoom = ""
+    static firstRoom = ""
+    static levelName = ""
+
+    static levelStarted = false
+    static playingCustomLevel = false
 
     static roomData = undefined;
     static instanceMap = ds_map_create()
@@ -124,9 +127,19 @@ function RoomLoader() constructor
     {
         print("Playing level", level)
 
+        levelStarted = false
+        playingCustomLevel = true
         firstRoom = "room"
+
         ClearInstanceMap()
         GoToRoom(level, "room")
+    }
+
+    static Reset = function()
+    {
+        levelStarted = false
+        playingCustomLevel = false
+        ClearInstanceMap()
     }
 
     static InitializeRoom = function()
@@ -204,7 +217,7 @@ function RoomLoader() constructor
             }
         }
 
-        if !instance_exists(ob_player)
+        if !levelStarted
         {
             print("Setting current stage data")
             ob_stageManager.currentStage = CreateStageData()
@@ -218,6 +231,8 @@ function RoomLoader() constructor
                 if !inReplayMode()
                     input_player().startRecording()
             }
+
+            levelStarted = true
         }
     }
 }

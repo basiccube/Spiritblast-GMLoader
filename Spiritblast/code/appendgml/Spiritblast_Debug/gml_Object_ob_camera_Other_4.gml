@@ -1,10 +1,10 @@
 if (room == rm_template_room)
     RoomLoader.InitializeRoom()
 else if (room == rm_mainMenu)
-    RoomLoader.ClearInstanceMap()
+    RoomLoader.Reset()
 else if (room == rm_splashScreen)
 {
-    RoomLoader.ClearInstanceMap()
+    RoomLoader.Reset()
     if global.sb_settings.debug.skipSplash
     {
         print("Skip splash screens")

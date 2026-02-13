@@ -8,3 +8,15 @@ gml_Object_ob_warp_Create_0:
             RoomLoader.GoToRoom(RoomLoader.levelName, targetRoom)
         else
             room_goto(targetRoom)
+
+gml_Object_ob_stageManager_Create_0:
+  - type: findprepend
+    
+    find: |-
+        var _hubToPortal = currentStage != undefined && arg0 == undefined
+    code: |-
+        if RoomLoader.playingCustomLevel
+        {
+            arg0 = rm_logoDrop
+            RoomLoader.playingCustomLevel = false
+        }
