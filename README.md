@@ -2,8 +2,6 @@
 
 A mod for ANTONBLAST (vm_public builds), made using GMLoader.
 
-**!! VERY INCOMPLETE AND WIP, DO NOT BOTHER YET !!**
-
 Currently features the following:
 * Access to the GameMaker debug overlay
 * Some basic debug functionality (such as debug collision visibility)
@@ -15,6 +13,8 @@ There are a few keys that have been added that do some sort of action:
 * **F5** - Change current page in menu
 
 To be able to use these keys, you need to first enable them within the new "Debug" page in the options menu.
+
+**The mod in its current state is not finished and is still a work in progress.**
 
 ## Install
 
