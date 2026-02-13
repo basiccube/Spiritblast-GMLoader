@@ -7,14 +7,14 @@ A mod for ANTONBLAST (vm_public builds), made using GMLoader.
 Currently features the following:
 * Access to the GameMaker debug overlay
 * Some basic debug functionality (such as debug collision visibility)
-* Borderless fullscreen option
-
-The following is in the YYToolkit iteration of Spiritblast and hasn't been implemented yet:
 * Custom room loading functionality (WIP)
+* Borderless fullscreen option
 
 There are a few keys that have been added that do some sort of action:
 * **F4** - Toggle debug collision visibility
 * **F5** - Change current page in menu
+
+To be able to use these keys, you need to first enable them within the new "Debug" page in the options menu.
 
 ## Install
 
