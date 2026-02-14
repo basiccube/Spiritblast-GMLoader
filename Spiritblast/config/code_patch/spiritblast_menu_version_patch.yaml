@@ -1,3 +1,4 @@
+# Add Spiritblast version number to the main menu
 gml_Object_ob_mainMenu_Draw_0:
   - type: findappend
     

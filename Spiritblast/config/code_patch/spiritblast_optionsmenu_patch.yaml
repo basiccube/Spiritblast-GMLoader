@@ -1,3 +1,4 @@
+# Add check if the current page is the newly added debug page and set the appropriate header text for it
 gml_Object_ob_optionsMenu_Create_0:
   - type: findprepend
     

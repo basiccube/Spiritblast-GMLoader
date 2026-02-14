@@ -6,7 +6,7 @@ debugPage = pageCreate(
     new menuButton("Back", popPage)
 )
 
-var debugPageBtn = new menuButton("Debug", changePage, [debugPage])
+var debugPageBtn = new menuButton("Debug", changePage, debugPage)
 ds_list_insert(mainPage, 5, debugPageBtn)
 
 // For some reason creating a page in the options menu also changes the current page to it

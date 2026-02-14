@@ -1,3 +1,5 @@
+# gotoTargetRoom patch
+# Check if the room trying to warp to is a string and then assume it's a custom room if it is
 gml_Object_ob_warp_Create_0:
   - type: findreplace
     
@@ -9,6 +11,8 @@ gml_Object_ob_warp_Create_0:
         else
             room_goto(targetRoom)
 
+# endStage patch
+# Exiting a custom stage will exit to the main menu rather than try to go to the hub
 gml_Object_ob_stageManager_Create_0:
   - type: findprepend
     

@@ -132,7 +132,18 @@ function RoomLoader() constructor
         firstRoom = "room"
 
         ClearInstanceMap()
-        GoToRoom(level, "room")
+        GoToRoom(level, firstRoom)
+    }
+
+    static RestartCustomLevel = function()
+    {
+        print("Restarting current level")
+
+        levelStarted = false
+        playingCustomLevel = true
+        
+        ClearInstanceMap()
+        GoToRoom(levelName, firstRoom)
     }
 
     static Reset = function()
@@ -172,7 +183,10 @@ function RoomLoader() constructor
                 if (instobj == -1)
                     continue;
 
-                var inst = instance_create_layer(instdata.x, instdata.y, layID, instobj)
+                var inst = instance_create_layer(instdata.x, instdata.y, layID, instobj, {
+                    image_xscale : instdata.xscale,
+                    image_yscale : instdata.yscale
+                })
                 var instString = GetInstanceIDString(instdata.id, instdata.x, instdata.y)
 
                 if firstTime
@@ -197,9 +211,6 @@ function RoomLoader() constructor
                         continue;
                     }
                 }
-
-                inst.image_xscale = instdata.xscale
-                inst.image_yscale = instdata.yscale
 
                 for (var k = 0, l = array_length(instdata.variables); k < l; k++)
                 {

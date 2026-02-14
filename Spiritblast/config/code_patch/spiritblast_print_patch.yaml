@@ -1,3 +1,5 @@
+# Patch for print functions to not be disabled
+# Also changes crash handler to write the crash message to the log file
 gml_GlobalScript_debug_library:
   - type: findreplace
     
