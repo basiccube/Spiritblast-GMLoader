@@ -11,10 +11,17 @@ function RoomLoader() constructor
 
     static roomData = undefined;
     static instanceMap = ds_map_create()
+    static checkpointInstanceMap = ds_map_create()
 
-    static GetInstanceIDString = function(objname, x, y)
+    static GetInstanceIDString = function(objID)
     {
-        var instString = objname + "_" + string(x) + "_" + string(y)
+        var instString = object_get_name(objID.object_index) + "_" + string(objID.xstart) + "_" + string(objID.ystart)
+        return instString;
+    }
+
+    static GetExtendedInstanceIDString = function(rm, objID)
+    {
+        var instString = rm + "_" + GetInstanceIDString(objID)
         return instString;
     }
 
@@ -42,9 +49,7 @@ function RoomLoader() constructor
                 if !instance_exists(instID)
                     continue;
 
-                var name = object_get_name(instID.object_index)
-
-                var istr = GetInstanceIDString(name, instID.x, instID.y)
+                var istr = GetInstanceIDString(instID)
                 if (istr == instString)
                 {
                     exists = true
@@ -59,6 +64,44 @@ function RoomLoader() constructor
                 i--
             }
         }
+    }
+
+    static DeleteInstanceFromList = function(obj, x, y)
+    {
+        var istr = GetInstanceIDString(obj)
+        if !ds_map_exists(instanceMap, currentRoom)
+            exit;
+
+        var instances = ds_map_find_value(instanceMap, currentRoom)
+        for (var i = 0, n = array_length(instances); i < n; i++)
+        {
+            var instString = instances[i]
+            if (instString == istr)
+            {
+                array_delete(instances, i, 1)
+                break;
+            }
+        }
+    }
+
+    static CopyInstanceMap = function(destMap, srcMap)
+    {
+        ds_map_clear(destMap)
+
+        var key = ds_map_find_first(srcMap)
+        for (var i = 0, n = ds_map_size(srcMap); i < n; i++)
+        {
+            var value = ds_map_find_value(srcMap, key)
+            var len = array_length(value)
+            
+            var arr = []
+            array_copy(arr, 0, value, 0, len)
+            ds_map_set(destMap, key, arr)
+            
+            key = ds_map_find_next(srcMap, key)
+        }
+
+        return destMap;
     }
 
     static CreateStageData = function()
@@ -187,7 +230,7 @@ function RoomLoader() constructor
                     image_xscale : instdata.xscale,
                     image_yscale : instdata.yscale
                 })
-                var instString = GetInstanceIDString(instdata.id, instdata.x, instdata.y)
+                var instString = GetInstanceIDString(inst)
 
                 if firstTime
                     array_push(instanceList, instString)
@@ -207,8 +250,21 @@ function RoomLoader() constructor
 
                     if destroy
                     {
-                        instance_destroy(inst, false)
-                        continue;
+                        var shouldContinue = false
+                        switch inst.object_index
+                        {
+                            case ob_checkPoint:
+                                inst.destroyed = true
+                                inst.onConservedLoad()
+                                break;
+
+                            default:
+                                shouldContinue = true
+                                instance_destroy(inst, false)
+                        }
+
+                        if shouldContinue
+                            continue;
                     }
                 }
 

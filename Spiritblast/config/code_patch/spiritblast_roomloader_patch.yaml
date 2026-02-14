@@ -24,3 +24,84 @@ gml_Object_ob_stageManager_Create_0:
             arg0 = rm_logoDrop
             RoomLoader.playingCustomLevel = false
         }
+
+# saveCheckpoint patches
+  - type: findappend
+
+    find: |-
+        var _checkpointID = ""
+    code: |-
+        var _roomLoader_checkpointID = ""
+        if RoomLoader.playingCustomLevel
+        {
+            if !is_struct(arg0)
+                _roomLoader_checkpointID = RoomLoader.GetExtendedInstanceIDString(RoomLoader.currentRoom, arg0)
+            RoomLoader.CopyInstanceMap(RoomLoader.checkpointInstanceMap, RoomLoader.instanceMap)
+        }
+
+  - type: findprepend
+
+    find: |-
+        checkpointID: _checkpointID,
+    code: |-
+        roomLoader_checkpointID : _roomLoader_checkpointID,
+
+  - type: findprepend
+
+    find: |-
+        checkpointRoom: room,
+    code: |-
+        roomLoader_currentRoom : RoomLoader.currentRoom,
+
+# loadCheckpoint patches
+  - type: findprepend
+    
+    find: |-
+        room_goto(_data.checkpointRoom)
+    code: |-
+        if RoomLoader.playingCustomLevel
+        {
+            RoomLoader.GoToRoom(RoomLoader.levelName, _data.roomLoader_currentRoom)
+            RoomLoader.CopyInstanceMap(RoomLoader.instanceMap, RoomLoader.checkpointInstanceMap)
+        }
+        else
+
+  - type: findreplace
+    
+    find: |-
+        if (conservedID == arg1)
+    code: |-
+        var extendedID = RoomLoader.GetExtendedInstanceIDString(RoomLoader.currentRoom, id)
+        if ((!RoomLoader.playingCustomLevel && conservedID == arg1) || (RoomLoader.playingCustomLevel && extendedID == arg1))
+
+  - type: findreplace
+    
+    find: |-
+        }, [_data, _checkpointID], 1)
+    code: |-
+        }, [_data, RoomLoader.playingCustomLevel ? checkpointData.get(0).roomLoader_checkpointID : _checkpointID], 1)
+
+# actionRestartStage patch
+# Makes the restart stage button work with custom levels
+gml_Object_ob_pauseMenu_Create_0:
+  - type: findprepend
+
+    find: |-
+        global.stage_manager.startStage(global.stage_manager.currentStage, global.stage_manager.mode)
+    code: |-
+        if RoomLoader.playingCustomLevel
+            RoomLoader.RestartCustomLevel()
+        else
+
+# Patch for the checkpoint object to be destroyed in custom stages and to update the instance list
+gml_Object_ob_checkPoint_Create_0:
+  - type: findprepend
+
+    find: |-
+        activateCheckpoint()
+    code: |-
+        if RoomLoader.playingCustomLevel
+        {
+            RoomLoader.DeleteInstanceFromList(object_index, x, y)
+            RoomLoader.CheckInstancesInRoomList()
+        }
