@@ -111,9 +111,47 @@ function RoomLoader() constructor
         var baseStage = struct_get(ob_stageManager.stages, "cinnamonSprings")
         var newStage = variable_clone(baseStage)
 
-        newStage.name = "customStage"
-        newStage.initialMusic = mu_jamLayerA
-        newStage.firstRoom = rm_template_room
+        with (newStage)
+        {
+            name = "customStage"
+            initialMusic = mu_jamLayerA
+            firstRoom = rm_template_room
+
+            collectablesNames = ["vinyl", "spirit"]
+            followerCollectablesIndex = array_length(collectablesNames)
+
+            resetData = function()
+            {
+                data = 
+                {
+                    collectables: new collectablesData(self),
+                    secretsFound: 0,
+                    highScore: 0,
+
+                    timeRank1: -999999,
+                    timeRank2: -999999,
+                    timeRank3: -999999,
+                    nameRank1: "YOU",
+                    nameRank2: "YOU",
+                    nameRank3: "YOU",
+                    
+                    bestTime: -1,
+                    bestCombo: -1,
+                    bestBreakables: -1,
+
+                    visited: false,
+                    paul: false,
+
+                    comboCracked: false,
+                    comboSuperCracked: false,
+
+                    cleared: false,
+                    deathsTest: [],
+                    deathsLast: []
+                }
+                resetInterstitialsPool()
+            }
+        }
 
         struct_set(ob_stageManager.stages, "customStage", newStage)
         return newStage;

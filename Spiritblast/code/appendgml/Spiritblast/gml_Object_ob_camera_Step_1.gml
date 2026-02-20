@@ -21,6 +21,14 @@ if global.sb_settings.debug.debugControls
 			}
 		}
 	}
+
+	if (keyboard_check_pressed(vk_f7) && alarm[0] <= -1)
+	{
+		if !rf_connected
+			rf_startConnection()
+		else
+			rf_stopConnection()
+	}
 }
 
 // Check if the debug overlay is open and disable global input

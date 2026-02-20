@@ -1,4 +1,4 @@
-// The game already has the funcionality for drawing the collision,
+// The game already has the functionality for drawing the collision,
 // but I'm doing it my way anyway
 
 global.sb_debugCollisionData = []
