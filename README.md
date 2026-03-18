@@ -11,6 +11,8 @@ Currently features the following:
 There are a few keys that have been added that do some sort of action:
 * **F4** - Toggle debug collision visibility
 * **F5** - Change current page in menu
+* **F7** - Attempt connection to Room Factory
+* **F8** - Run Catspeak code in `sb_debugcode.meow`
 
 To be able to use these keys, you need to first enable them within the new "Debug" page in the options menu.
 
