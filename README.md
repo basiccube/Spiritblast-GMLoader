@@ -23,6 +23,10 @@ This [one](https://gamebanana.com/tools/21913) should work fine, alternatively y
 
 Download this repository and then copy the folders located in the Spiritblast folder into your mods folder.
 
+To get the debug output window to work, you'll need SpiritblastUtils.dll to be present next to the game executable.  
+If you want to build it yourself, see the readme in the SpiritblastUtils folder.
+
 ## Credits
 
 * [GMLoader](https://github.com/Senjay-id/GMLoader)
+* [Catspeak](https://github.com/katsaii/catspeak-lang)

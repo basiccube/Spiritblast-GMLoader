@@ -29,6 +29,21 @@ if global.sb_settings.debug.debugControls
 		else
 			rf_stopConnection()
 	}
+
+	var sb_debugcode = "sb_debugcode.meow"
+	if (keyboard_check_pressed(vk_f8) && file_exists(sb_debugcode))
+	{
+		// parse
+		var buf = buffer_load(sb_debugcode)
+		var ir = global.catspeak.parse(buf)
+		buffer_delete(buf)
+
+		// compile
+		var program = global.catspeak.compile(ir)
+
+		// execute
+		program()
+	}
 }
 
 // Check if the debug overlay is open and disable global input

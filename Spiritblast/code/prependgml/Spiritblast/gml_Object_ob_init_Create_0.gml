@@ -22,7 +22,7 @@ if file_exists(working_directory + "spiritblast.log")
 if global.sb_settings.debug.debugOutput
 {
 	conhost_init()
-	conhost_title("ANTONBLAST (Console)")
+	conhost_title("ANTONBLAST (Debug Output)")
 }
 
 // Print version info

@@ -51,3 +51,8 @@ rf_stopConnection = function()
         rf_serversocket = -4
     }
 }
+
+// The smart way would be to expose only what's needed,
+// but I don't even know if this shit will ever be used by anyone except me
+global.catspeak.interface.exposeEverythingIDontCareIfModdersCanEditUsersSaveFilesJustLetMeDoThis = true
+global.catspeak.interface.exposeFunction("print", print)
