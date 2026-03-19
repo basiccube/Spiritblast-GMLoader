@@ -114,7 +114,14 @@ function RoomLoader() constructor
         with (newStage)
         {
             name = "customStage"
-            initialMusic = mu_jamLayerA
+            initialMusic = undefined
+            if struct_exists(other.roomData.roomInfo, "music")
+            {
+                var mus = asset_get_index(other.roomData.roomInfo.music)
+                if (mus != -1)
+                    initialMusic = mus
+            }
+
             firstRoom = rm_template_room
 
             collectablesNames = ["vinyl", "spirit"]
@@ -322,10 +329,19 @@ function RoomLoader() constructor
             }
         }
 
+        // Play music
+        if (struct_exists(roomData.roomInfo, "music") && levelStarted)
+        {
+            var mus = asset_get_index(roomData.roomInfo.music)
+            if (global.music.soundAsset != mus)
+                global.music.play(mus)
+        }
+
         if !levelStarted
         {
             print("Setting current stage data")
             ob_stageManager.currentStage = CreateStageData()
+            global.music.stop()
 
             print("Doing stage intro")
             with (ob_stageManager)
