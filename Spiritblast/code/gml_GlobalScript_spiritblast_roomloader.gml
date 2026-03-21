@@ -232,9 +232,19 @@ function RoomLoader() constructor
         return newStage;
     }
 
-    static GetCurrentLevelPath = function(level = undefined)
+    static ReadLevelInfo = function(level = levelName)
     {
-        return "levels/" + (level == undefined ? levelName : level);
+        var path = GetCurrentLevelPath(level) + "/level.rflvl"
+        if !file_exists(path)
+            return undefined;
+
+        var info = json_parse(file_text_read_all(path))
+        return info;
+    }
+
+    static GetCurrentLevelPath = function(level = levelName)
+    {
+        return "levels/" + level;
     }
 
     static LoadRoomData = function(path)

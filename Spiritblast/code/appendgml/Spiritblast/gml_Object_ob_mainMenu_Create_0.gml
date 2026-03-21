@@ -7,18 +7,10 @@ customLevelsPage = pageCreate()
     var file = file_find_first("levels/*", fa_directory)
     while (file != "")
     {
-        var lvlName = file
-        var lvlRoom = "room"
-
-        // Get level info from the level INI file
-        var lvlIniPath = "levels/" + file + "/level.ini"
-        if file_exists(lvlIniPath)
-        {
-            ini_open(lvlIniPath)
-            lvlName = ini_read_string("Level", "Name", lvlName)
-            lvlRoom = ini_read_string("Level", "FirstRoom", lvlRoom)
-            ini_close()
-        }
+        // Get level info from the level info file
+        var info = RoomLoader.ReadLevelInfo(file)
+        var lvlName = struct_get(info, "name") ?? file
+        var lvlRoom = struct_get(info, "firstRoom") ?? "room"
 
         var playMethod = method(static_get(RoomLoader), RoomLoader.PlayCustomLevel)
         var lvlBtn = new menuButton(lvlName, playMethod, [file, lvlRoom])
