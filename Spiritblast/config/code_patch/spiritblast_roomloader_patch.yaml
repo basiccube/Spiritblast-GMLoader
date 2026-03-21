@@ -105,3 +105,12 @@ gml_Object_ob_checkPoint_Create_0:
             RoomLoader.DeleteInstanceFromList(object_index, x, y)
             RoomLoader.CheckInstancesInRoomList()
         }
+
+# Update custom music volume
+gml_Object_ob_musicManager_Create_0:
+  - type: findappend
+
+    find: |-
+        audio_group_set_gain(laying_pipe_haha, arg0, 0)
+    code: |-
+        RoomLoader.UpdateMusicVolume(arg0)

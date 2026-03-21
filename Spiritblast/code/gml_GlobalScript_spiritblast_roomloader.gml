@@ -13,6 +13,8 @@ function RoomLoader() constructor
     static instanceMap = ds_map_create()
     static checkpointInstanceMap = ds_map_create()
 
+    static musicCache = ds_map_create()
+
     static GetInstanceIDString = function(objID)
     {
         var instString = object_get_name(objID.object_index) + "_" + string(objID.xstart) + "_" + string(objID.ystart)
@@ -104,6 +106,65 @@ function RoomLoader() constructor
         return destMap;
     }
 
+    static GetMusicFromCache = function(path)
+    {
+        if !ds_map_exists(musicCache, path)
+        {
+            print("No music with the path", path, "exists in the cache")
+            return undefined;
+        }
+
+        return ds_map_find_value(musicCache, path);
+    }
+
+    static LoadMusicToCache = function(path)
+    {
+        if ds_map_exists(musicCache, path)
+        {
+            print("Music file", path, "already cached!")
+            return undefined;
+        }
+
+        var fpath = GetCurrentLevelPath() + "/music/" + path
+        if !file_exists(fpath)
+        {
+            print("Cannot add", path, "as file doesn't exist")
+            return undefined;
+        }
+
+        var snd = audio_create_stream(fpath)
+        audio_sound_gain(snd, adjust_linear_gain(global.settings.musicVolume) - 0.25)
+        ds_map_set(musicCache, path, snd)
+
+        return snd;
+    }
+
+    static ResetMusicCache = function()
+    {
+        print("Clearing music cache")
+
+        var key = ds_map_find_first(musicCache)
+        for (var i = 0, n = ds_map_size(musicCache); i < n; i++)
+        {
+            var value = ds_map_find_value(musicCache, key)
+            audio_destroy_stream(value)
+            key = ds_map_find_next(musicCache, key)
+        }
+
+        ds_map_clear(musicCache)
+    }
+
+    static UpdateMusicVolume = function(vol)
+    {
+        var key = ds_map_find_first(musicCache)
+        for (var i = 0, n = ds_map_size(musicCache); i < n; i++)
+        {
+            var value = ds_map_find_value(musicCache, key)
+            audio_sound_gain(value, vol - 0.25)
+            key = ds_map_find_next(musicCache, key)
+        }
+    }
+
     static CreateStageData = function()
     {
         // Makes a copy of the data for Cinnamon Springs
@@ -115,13 +176,6 @@ function RoomLoader() constructor
         {
             name = "customStage"
             initialMusic = undefined
-            if struct_exists(other.roomData.roomInfo, "music")
-            {
-                var mus = asset_get_index(other.roomData.roomInfo.music)
-                if (mus != -1)
-                    initialMusic = mus
-            }
-
             firstRoom = rm_template_room
 
             collectablesNames = ["vinyl", "spirit"]
@@ -160,8 +214,27 @@ function RoomLoader() constructor
             }
         }
 
+        if struct_exists(roomData.roomInfo, "music")
+        {
+            var roommus = roomData.roomInfo.music
+            var mus = asset_get_index(roommus)
+            if (mus != -1 && asset_get_type(mus) == asset_sound)
+                newStage.initialMusic = mus
+            else
+            {
+                var snd = (ds_map_exists(musicCache, roommus) ? GetMusicFromCache(roommus) : LoadMusicToCache(roommus))
+                if !is_undefined(snd)
+                    newStage.initialMusic = snd
+            }
+        }
+
         struct_set(ob_stageManager.stages, "customStage", newStage)
         return newStage;
+    }
+
+    static GetCurrentLevelPath = function(level = undefined)
+    {
+        return "levels/" + (level == undefined ? levelName : level);
     }
 
     static LoadRoomData = function(path)
@@ -185,7 +258,7 @@ function RoomLoader() constructor
 
     static GoToRoom = function(level, name)
     {
-        roomData = LoadRoomData("levels/" + level + "/" + name + ".rfrm")
+        roomData = LoadRoomData(GetCurrentLevelPath(level) + "/rooms/" + name + ".rfrm")
         if is_undefined(roomData)
         {
             print("Cannot go to room", name)
@@ -211,14 +284,15 @@ function RoomLoader() constructor
         room_goto(rm_template_room)
     }
 
-    static PlayCustomLevel = function(level)
+    static PlayCustomLevel = function(level, room = "room")
     {
         print("Playing level", level)
 
         levelStarted = false
         playingCustomLevel = true
-        firstRoom = "room"
+        firstRoom = room
 
+        ResetMusicCache()
         ClearInstanceMap()
         GoToRoom(level, firstRoom)
     }
@@ -239,6 +313,7 @@ function RoomLoader() constructor
         levelStarted = false
         playingCustomLevel = false
         ClearInstanceMap()
+        ResetMusicCache()
     }
 
     static InitializeRoom = function()
@@ -332,16 +407,25 @@ function RoomLoader() constructor
         // Play music
         if (struct_exists(roomData.roomInfo, "music") && levelStarted)
         {
-            var mus = asset_get_index(roomData.roomInfo.music)
-            if (global.music.soundAsset != mus)
+            var roommus = roomData.roomInfo.music
+            var mus = asset_get_index(roommus)
+            var isbasemusic = (mus != -1 && asset_get_type(mus) == asset_sound)
+
+            if (isbasemusic && global.music.soundAsset != mus)
                 global.music.play(mus)
+            else if !isbasemusic
+            {
+                var snd = (ds_map_exists(musicCache, roommus) ? GetMusicFromCache(roommus) : LoadMusicToCache(roommus))
+                if (!is_undefined(snd) && global.music.soundAsset != snd)
+                    global.music.play(snd)
+            }
         }
 
         if !levelStarted
         {
             print("Setting current stage data")
             ob_stageManager.currentStage = CreateStageData()
-            global.music.stop()
+            global.music.stop(false)
 
             print("Doing stage intro")
             with (ob_stageManager)
