@@ -1,4 +1,4 @@
-#macro ROOM_VERSION 1
+#macro ROOM_VERSION 2
 
 function RoomLoader() constructor
 {
@@ -275,7 +275,7 @@ function RoomLoader() constructor
             exit;
         }
 
-        if (roomData.rf_roomversion != ROOM_VERSION)
+        if (roomData.rf_roomversion > ROOM_VERSION)
         {
             print("Incorrect room version!")
             print("Expected", ROOM_VERSION, ", got", roomData.rf_roomversion)
@@ -348,69 +348,107 @@ function RoomLoader() constructor
             if !layer_exists(layName)
                 layer_create(layDepth, layName)
 
+            if !struct_exists(lay, "type")
+                lay.type = "instance"
+
             var layID = layer_get_id(layName)
-            for (var j = 0, m = array_length(lay.instances); j < m; j++)
+            switch lay.type
             {
-                var instdata = lay.instances[j]
-                var instobj = asset_get_index(instdata.id)
-                if (instobj == -1)
-                    continue;
+                case "instance":
+                    if !struct_exists(lay, "instances")
+                        break
 
-                var inst = instance_create_layer(instdata.x, instdata.y, layID, instobj, {
-                    image_xscale : instdata.xscale,
-                    image_yscale : instdata.yscale
-                })
-                var instString = GetInstanceIDString(inst)
-
-                if firstTime
-                    array_push(instanceList, instString)
-                else
-                {
-                    var destroy = true
-                    // Find the instance and destroy it if it doesn't exist
-                    for (var k = 0, l = array_length(instanceList); k < l; k++)
+                    for (var j = 0, m = array_length(lay.instances); j < m; j++)
                     {
-                        var lstr = instanceList[k]
-                        if (instString == lstr)
-                        {
-                            destroy = false
-                            break;
-                        }
-                    }
-
-                    if destroy
-                    {
-                        var shouldContinue = false
-                        switch inst.object_index
-                        {
-                            case ob_checkPoint:
-                                inst.destroyed = true
-                                inst.onConservedLoad()
-                                break;
-
-                            default:
-                                shouldContinue = true
-                                instance_destroy(inst, false)
-                        }
-
-                        if shouldContinue
+                        var instdata = lay.instances[j]
+                        var instobj = asset_get_index(instdata.id)
+                        if (instobj == -1)
                             continue;
+
+                        var inst = instance_create_layer(instdata.x, instdata.y, layID, instobj, {
+                            image_xscale : instdata.xscale,
+                            image_yscale : instdata.yscale
+                        })
+                        var instString = GetInstanceIDString(inst)
+
+                        if firstTime
+                            array_push(instanceList, instString)
+                        else
+                        {
+                            var destroy = true
+                            // Find the instance and destroy it if it doesn't exist
+                            for (var k = 0, l = array_length(instanceList); k < l; k++)
+                            {
+                                var lstr = instanceList[k]
+                                if (instString == lstr)
+                                {
+                                    destroy = false
+                                    break;
+                                }
+                            }
+
+                            if destroy
+                            {
+                                var shouldContinue = false
+                                switch inst.object_index
+                                {
+                                    case ob_checkPoint:
+                                        inst.destroyed = true
+                                        inst.onConservedLoad()
+                                        break;
+
+                                    default:
+                                        shouldContinue = true
+                                        instance_destroy(inst, false)
+                                }
+
+                                if shouldContinue
+                                    continue;
+                            }
+                        }
+
+                        for (var k = 0, l = array_length(instdata.variables); k < l; k++)
+                        {
+                            var ivar = instdata.variables[k]
+
+                            var varname = ivar[0]
+                            var varvalue = ivar[1]
+                            var vartype = ivar[2]
+
+                            if (vartype == "default")
+                                continue;
+
+                            variable_instance_set(inst, varname, varvalue)
+                        }
                     }
-                }
+                    break
 
-                for (var k = 0, l = array_length(instdata.variables); k < l; k++)
-                {
-                    var ivar = instdata.variables[k]
+                case "asset":
+                    if !struct_exists(lay, "sprites")
+                        break
 
-                    var varname = ivar[0]
-                    var varvalue = ivar[1]
-                    var vartype = ivar[2]
+                    for (var j = 0, m = array_length(lay.sprites); j < m; j++)
+                    {
+                        var spr = lay.sprites[j]
+                        var sprAsset = asset_get_index(spr.sprite)
+                        if (sprAsset == -1)
+                        {
+                            print("Cannot find sprite", spr.sprite)
+                            continue;
+                        }
 
-                    if (vartype == "default")
-                        continue;
+                        var element = layer_sprite_create(layID, spr.x, spr.y, sprAsset)
 
-                    variable_instance_set(inst, varname, varvalue)
-                }
+                        layer_sprite_xscale(element, spr.xscale)
+                        layer_sprite_yscale(element, spr.yscale)
+
+                        layer_sprite_alpha(element, spr.alpha)
+                        layer_sprite_angle(element, spr.angle)
+
+                        layer_sprite_index(element, spr.index)
+                        layer_sprite_speed(element, spr.speed)
+                    }
+                    break
             }
         }
 
