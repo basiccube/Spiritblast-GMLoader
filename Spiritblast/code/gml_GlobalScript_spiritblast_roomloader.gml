@@ -369,8 +369,10 @@ function RoomLoader() constructor
                             image_xscale : instdata.xscale,
                             image_yscale : instdata.yscale
                         })
+                        if !instance_exists(inst)
+                            continue;
+                        
                         var instString = GetInstanceIDString(inst)
-
                         if firstTime
                             array_push(instanceList, instString)
                         else
@@ -449,6 +451,18 @@ function RoomLoader() constructor
                         layer_sprite_speed(element, spr.speed)
                     }
                     break
+
+                case "background":
+                    if !struct_exists(lay, "backgrounds")
+                        break
+
+                    for (var j = 0, m = array_length(lay.backgrounds); j < m; j++)
+                    {
+                        var bg = lay.backgrounds[j]
+                        if (struct_exists(bg, "preset") && bg.preset)
+                            PresetBackgrounds.Activate(bg.name)
+                    }
+                    break
             }
         }
 
@@ -456,16 +470,19 @@ function RoomLoader() constructor
         if (struct_exists(roomData.roomInfo, "music") && levelStarted)
         {
             var roommus = roomData.roomInfo.music
-            var mus = asset_get_index(roommus)
-            var isbasemusic = (mus != -1 && asset_get_type(mus) == asset_sound)
-
-            if (isbasemusic && global.music.soundAsset != mus)
-                global.music.play(mus)
-            else if !isbasemusic
+            if (roommus != "")
             {
-                var snd = (ds_map_exists(musicCache, roommus) ? GetMusicFromCache(roommus) : LoadMusicToCache(roommus))
-                if (!is_undefined(snd) && global.music.soundAsset != snd)
-                    global.music.play(snd)
+                var mus = asset_get_index(roommus)
+                var isbasemusic = (mus != -1 && asset_get_type(mus) == asset_sound)
+
+                if (isbasemusic && global.music.soundAsset != mus)
+                    global.music.play(mus)
+                else if !isbasemusic
+                {
+                    var snd = (ds_map_exists(musicCache, roommus) ? GetMusicFromCache(roommus) : LoadMusicToCache(roommus))
+                    if (!is_undefined(snd) && global.music.soundAsset != snd)
+                        global.music.play(snd)
+                }
             }
         }
 
